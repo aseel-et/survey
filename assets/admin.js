@@ -131,11 +131,15 @@
     var btn = this.querySelector('button');
     btn.disabled = true;
     var res = await db.auth.signInWithPassword({
-      email: document.getElementById('email').value.trim(),
-      password: document.getElementById('pass').value
+      email: document.getElementById('email').value.trim().toLowerCase(),
+      password: document.getElementById('pass').value.trim()
     });
     btn.disabled = false;
-    if (res.error) return showLogin('البريد الإلكتروني أو كلمة المرور غير صحيحة.');
+    if (res.error) {
+      return showLogin(res.error.code === 'invalid_credentials' || res.error.status === 400
+        ? 'البريد الإلكتروني أو كلمة المرور غير صحيحة.'
+        : 'تعذّر تسجيل الدخول، تأكد من اتصالك بالإنترنت وحاول مرة أخرى.');
+    }
     openDashboard();
   });
 
